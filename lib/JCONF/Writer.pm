@@ -5,7 +5,7 @@ use Carp;
 use B;
 use JCONF::Writer::Error;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 sub new {
 	my ($class, %opts) = @_;
