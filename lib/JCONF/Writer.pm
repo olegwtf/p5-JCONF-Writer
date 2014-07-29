@@ -80,7 +80,7 @@ sub _write {
 			return $self->_write_array($rv_ref, $value, $indents);
 		}
 		
-		if ($ref eq 'Parse::JCONF::Boolean') {
+		if ($ref eq 'Parse::JCONF::Boolean' || $ref eq 'JCONF::Writer::Boolean') {
 			return $self->_write_boolean($rv_ref, $value);
 		}
 	}
@@ -153,3 +153,92 @@ sub _write_string {
 }
 
 1;
+
+__END__
+
+JCONF::Writer - Create JCONF configuration from perl code
+
+=head1 SYNOPSIS
+
+	use strict;
+	use JCONF::Writer;
+	use JCONF::Writer::Boolean qw(TRUE FALSE);
+	
+	my $writer = JCONF::Writer->new(autodie => 1);
+	my %cfg = (
+		modules => {
+			Moose => 1,
+			Mouse => 0.91,
+			Moo   => 0.05,
+			Mo    => [0.01, 0.08],
+		},
+	 
+		enabled => TRUE,
+		data    => ["Test data", "Production data"]
+	 
+		query   => q!SELECT * from pkg
+				   LEFT JOIN ver ON pkg.id=ver.pkg_id
+				   WHERE pkg.name IN ("Moose", "Mouse", "Moo", "Mo")!
+	);
+	
+	my $jconf = eval {
+		$writer->from_hashref(\%cfg);
+	};
+	if ($@) {
+		die "Invalid config: ", $@;
+	}
+	
+	print $jconf;
+	
+	__END__
+	modules = {
+		Moose: 1,
+		Mouse: 0.91,
+		Moo: 0.05,
+		Mo: [0.01, 0.08],
+	}
+	 
+	enabled = true
+	data = ["Test data", "Production data"]
+	 
+	query = "SELECT * from pkg
+			 LEFT JOIN ver ON pkg.id=ver.pkg_id
+			 WHERE pkg.name IN (\"Moose\", \"Mouse\", \"Moo\", \"Mo\")"
+
+=head1 METHODS
+
+=head2 new
+
+This is writer object constructor. Available parameters are:
+ 
+=over
+ 
+=item autodie
+ 
+throw exception on any error if true, default is false (in this case writer methods will return undef on error
+and error may be found with L</last_error> method)
+
+=back
+ 
+=head2 from_hashref
+
+Converts hash reference to valid formatted JCONF and returns it as string.
+On fail returns undef/throws exception (according to C<autodie> option in the constructor).
+
+=head2 last_error
+ 
+Returns error occured for last writer call. Error will be C<JCONF::Writer::Error> object or undef
+(if there was no error).
+ 
+=head1 SEE ALSO
+ 
+L<Parse::JCONF>
+ 
+=head1 COPYRIGHT
+ 
+Copyright Oleg G <oleg@cpan.org>.
+ 
+This library is free software; you can redistribute it and/or
+modify it under the same terms as Perl itself.
+ 
+=cut
