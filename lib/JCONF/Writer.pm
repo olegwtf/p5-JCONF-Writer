@@ -156,6 +156,8 @@ sub _write_string {
 
 __END__
 
+=pod
+
 JCONF::Writer - Create JCONF configuration from perl code
 
 =head1 SYNOPSIS
