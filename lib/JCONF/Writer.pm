@@ -31,7 +31,7 @@ sub _err {
 	if ($self->{autodie}) {
 		$self->{last_error}->throw();
 	}
-	 
+	
 	return;
 }
 
@@ -58,22 +58,26 @@ sub from_hashref {
 		$rv .= $name;
 		$rv .= " = ";
 		
-		$self->_write(\$rv, $value);
+		$self->_write(\$rv, $value, 0);
+		
+		$rv .= "\n";
 	}
 	
 	return $rv;
 }
 
 sub _write {
-	my ($self, $rv_ref, $value) = @_;
+	my ($self, $rv_ref, $value, $indents) = @_;
+	
+	$indents++;
 	
 	if (my $ref = ref $value) {
 		if ($ref eq 'HASH') {
-			return $self->_write_hash($rv_ref, $value);
+			return $self->_write_hash($rv_ref, $value, $indents);
 		}
 		
 		if ($ref eq 'ARRAY') {
-			return $self->_write_array($rv_ref, $value);
+			return $self->_write_array($rv_ref, $value, $indents);
 		}
 		
 		if ($ref eq 'Parse::JCONF::Boolean') {
@@ -93,27 +97,59 @@ sub _write {
 }
 
 sub _write_hash {
+	my ($self, $rv_ref, $value, $indents) = @_;
 	
+	$$rv_ref .= "{\n";
+	
+	while (my ($k, $v) = each %$value) {
+		$$rv_ref .= "\t"x$indents;
+		$self->_write_string($rv_ref, $k);
+		$$rv_ref .= ": ";
+		$self->_write($rv_ref, $v, $indents);
+		$$rv_ref .= ",\n";
+	}
+	
+	$$rv_ref .= "\t"x($indents-1);
+	$$rv_ref .= "}";
 }
 
 sub _write_array {
+	my ($self, $rv_ref, $value, $indents) = @_;
 	
+	$$rv_ref .= "[\n";
+	
+	for my $v (@$value) {
+		$$rv_ref .= "\t"x$indents;
+		$self->_write($rv_ref, $v, $indents);
+		$$rv_ref .= ",\n";
+	}
+	
+	$$rv_ref .= "\t"x($indents-1);
+	$$rv_ref .= "]"
 }
 
 sub _write_boolean {
-	
+	my ($self, $rv_ref, $value) = @_;
+	$$rv_ref .= $value ? 'true' : 'false';
 }
 
 sub _write_null {
-	
+	my ($self, $rv_ref) = @_;
+	$$rv_ref .= 'null';
 }
 
 sub _write_number {
-	
+	my ($self, $rv_ref, $value) = @_;
+	$$rv_ref .= $value;
 }
 
 sub _write_string {
+	my ($self, $rv_ref, $value) = @_;
 	
+	$value =~ s/\x5c/\x5c\x5c/g;
+	$value =~ s/"/\x5c"/g;
+	
+	$$rv_ref .= '"' . $value . '"';
 }
 
 1;
