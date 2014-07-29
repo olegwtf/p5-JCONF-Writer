@@ -5,7 +5,7 @@ use Carp;
 use B;
 use JCONF::Writer::Error;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 sub new {
 	my ($class, %opts) = @_;
@@ -157,6 +157,8 @@ sub _write_string {
 __END__
 
 =pod
+
+=head1 NAME
 
 JCONF::Writer - Create JCONF configuration from perl code
 
