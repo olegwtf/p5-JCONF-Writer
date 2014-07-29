@@ -212,35 +212,35 @@ JCONF::Writer - Create JCONF configuration from perl code
 =head2 new
 
 This is writer object constructor. Available parameters are:
- 
+
 =over
- 
+
 =item autodie
- 
+
 throw exception on any error if true, default is false (in this case writer methods will return undef on error
 and error may be found with L</last_error> method)
 
 =back
- 
+
 =head2 from_hashref
 
 Converts hash reference to valid formatted JCONF and returns it as string.
 On fail returns undef/throws exception (according to C<autodie> option in the constructor).
 
 =head2 last_error
- 
+
 Returns error occured for last writer call. Error will be C<JCONF::Writer::Error> object or undef
 (if there was no error).
- 
+
 =head1 SEE ALSO
- 
+
 L<Parse::JCONF>
- 
+
 =head1 COPYRIGHT
- 
+
 Copyright Oleg G <oleg@cpan.org>.
- 
+
 This library is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself.
- 
+
 =cut
