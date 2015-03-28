@@ -1,3 +1,4 @@
+Changes
 lib/JCONF/Writer.pm
 lib/JCONF/Writer/Boolean.pm
 lib/JCONF/Writer/Error.pm
